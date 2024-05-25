@@ -74,7 +74,7 @@ func NewConnection(dsn string) (*sql.DB, error) {
 }
 
 func FetchAccrual(address string, transactionID string) (*model.AccrualResponse, error) {
-	url := fmt.Sprintf("http://"+address+"/api/orders/%s", transactionID)
+	url := fmt.Sprintf(address+"/api/orders/%s", transactionID)
 	resp, err := http.Get(url)
 	if err != nil {
 		return nil, err

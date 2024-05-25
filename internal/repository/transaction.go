@@ -44,6 +44,12 @@ func (r *repo) AddOrder(ctx context.Context, userID int64, number string) (*mode
 		return &transaction, nil
 	}
 
+	// Проверяем ошибку после Next()
+	if err := rows.Err(); err != nil {
+		r.log.WithError(err).Error("Error while iterating rows")
+		return nil, err
+	}
+
 	return nil, nil
 }
 

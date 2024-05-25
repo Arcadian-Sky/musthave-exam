@@ -117,6 +117,12 @@ func (r *repo) GetOrders(ctx context.Context, userID int64, act string) ([]model
 		}
 		orders = append(orders, order)
 	}
+
+	if err := rows.Err(); err != nil {
+		r.log.WithError(err).Error("Error while iterating rows")
+		return nil, err
+	}
+
 	return orders, nil
 }
 

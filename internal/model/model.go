@@ -56,7 +56,7 @@ type Withdraw struct {
 	Date time.Time `json:"processed_at"`
 }
 
-var WithdrawRequest struct {
+type WithdrawRequest struct {
 	Order string  `json:"order"`
 	Sum   float64 `json:"sum"`
 }

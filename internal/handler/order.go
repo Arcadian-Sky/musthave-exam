@@ -159,24 +159,25 @@ func (h *Handler) WithdrawHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := json.NewDecoder(r.Body).Decode(&model.WithdrawRequest); err != nil {
+	var withdrawRequest model.WithdrawRequest
+	if err := json.NewDecoder(r.Body).Decode(&withdrawRequest); err != nil {
 		http.Error(w, "Invalid request format", http.StatusBadRequest)
 		return
 	}
 
-	if !h.isValidOrderNumber(model.WithdrawRequest.Order) {
+	if !h.isValidOrderNumber(withdrawRequest.Order) {
 		http.Error(w, "Invalid order number", http.StatusUnprocessableEntity)
 		return
 	}
 
 	ctx := r.Context()
-	err := h.repo.Withdraw(ctx, userID, model.WithdrawRequest.Order, model.WithdrawRequest.Sum)
+	err := h.repo.Withdraw(ctx, userID, withdrawRequest.Order, withdrawRequest.Sum)
 	if err != nil {
 		if err.Error() == model.ErrIncFunds.Error() {
 			http.Error(w, model.ErrIncFunds.Error(), http.StatusPaymentRequired)
 			return
 		} else {
-			h.log.WithError(err).WithField("WithdrawHandler", model.WithdrawRequest)
+			h.log.WithError(err).WithField("WithdrawHandler", withdrawRequest)
 			http.Error(w, "Internal server error", http.StatusInternalServerError)
 			return
 		}

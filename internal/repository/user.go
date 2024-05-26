@@ -89,7 +89,7 @@ func (r *repo) GetBalance(ctx context.Context, userID int64) (model.Balance, err
 
 	r.log.
 		WithField("balance", mbalance.Current).
-		Info("GetBalance")
+		Debug("GetBalance")
 
 	return mbalance, nil
 }

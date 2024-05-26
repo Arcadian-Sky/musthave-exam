@@ -81,7 +81,7 @@ func (h *Handler) GetOrdersHandler(w http.ResponseWriter, r *http.Request) {
 	h.log.
 		WithField("userID", userID).
 		WithField("orders", orders).
-		Info("GetOrdersHandler")
+		Debug("GetOrdersHandler")
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)

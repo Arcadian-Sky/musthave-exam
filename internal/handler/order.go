@@ -78,6 +78,11 @@ func (h *Handler) GetOrdersHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	h.log.
+		WithField("userID", userID).
+		WithField("orders", orders).
+		Info("GetOrdersHandler")
+
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	w.Write(response)
@@ -123,12 +128,20 @@ func (h *Handler) GetWithdrawalsHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	// if len(orders) == 0 {
-	// 	w.WriteHeader(http.StatusNoContent)
-	// 	return
-	// }
+	if len(orders) == 0 {
+		w.WriteHeader(http.StatusNoContent)
+		return
+	}
 
-	response, err := json.Marshal(orders)
+	var withdrawals []model.Withdraw
+	for _, order := range orders {
+		withdrawals = append(withdrawals, model.Withdraw{
+			ID:   order.ID,
+			Summ: order.Summ,
+			Date: order.Date,
+		})
+	}
+	response, err := json.Marshal(withdrawals)
 	if err != nil {
 		http.Error(w, "Failed to marshal response", http.StatusInternalServerError)
 		return
@@ -146,29 +159,27 @@ func (h *Handler) WithdrawHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var withdrawRequest struct {
-		Order string  `json:"order"`
-		Sum   float64 `json:"sum"`
-	}
-	if err := json.NewDecoder(r.Body).Decode(&withdrawRequest); err != nil {
+	if err := json.NewDecoder(r.Body).Decode(&model.WithdrawRequest); err != nil {
 		http.Error(w, "Invalid request format", http.StatusBadRequest)
 		return
 	}
 
-	if !h.isValidOrderNumber(withdrawRequest.Order) {
+	if !h.isValidOrderNumber(model.WithdrawRequest.Order) {
 		http.Error(w, "Invalid order number", http.StatusUnprocessableEntity)
 		return
 	}
 
 	ctx := r.Context()
-	err := h.repo.Withdraw(ctx, userID, withdrawRequest.Order, withdrawRequest.Sum)
+	err := h.repo.Withdraw(ctx, userID, model.WithdrawRequest.Order, model.WithdrawRequest.Sum)
 	if err != nil {
-		if err.Error() == "insufficient funds" {
-			http.Error(w, "Insufficient funds", http.StatusPaymentRequired)
+		if err.Error() == model.ErrIncFunds.Error() {
+			http.Error(w, model.ErrIncFunds.Error(), http.StatusPaymentRequired)
+			return
+		} else {
+			h.log.WithError(err).WithField("WithdrawHandler", model.WithdrawRequest)
+			http.Error(w, "Internal server error", http.StatusInternalServerError)
 			return
 		}
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
-		return
 	}
 
 	w.WriteHeader(http.StatusOK)

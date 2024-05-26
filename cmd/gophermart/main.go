@@ -29,9 +29,11 @@ func main() {
 	//set handlers
 	vhandler := handler.NewHandler(repo, ap.Logger, ap.Flags)
 
-	ap.Logger.WithField("Flags", *ap.Flags).Info("App init")
+	// ap.Logger.WithField("Flags", *ap.Flags).Info("App init")
 	proc := process.NewOrderProcess(repo, ap.Logger, (*ap.Flags).RecalcAddress)
-	go proc.StartTransactionProcessing(ap.Ctx)
+	proc.StartTransactionProcessing(ap.Ctx, repo)
+	go proc.WaitTransactionProcessing(ap.Ctx)
+	repo.SetProcess(proc.Listener)
 
 	go func() {
 		ap.Logger.Info("Start ListenAndServe")

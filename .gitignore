@@ -28,4 +28,3 @@ vendor/
 
 docker/Dockerfile
 docker/volume
-go.sum

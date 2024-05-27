@@ -32,7 +32,7 @@ func NewApp() (*app, error) {
 	logg := logrus.New()
 	// logg.SetFormatter(&logrus.JSONFormatter{})
 	// logg.SetLevel(logrus.InfoLevel)
-	logg.SetLevel(logrus.DebugLevel)
+	logg.SetLevel(logrus.InfoLevel)
 	// file, err := os.OpenFile("info.log", os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
 	// if err != nil {
 	// 	logg.Fatal(err)

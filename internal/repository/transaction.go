@@ -44,6 +44,11 @@ func (r *repo) AddOrder(ctx context.Context, userID int64, number string) (*mode
 		// уведомляем о новом заказе
 		r.process.NewOrderChan <- transaction.ID
 
+		r.log.
+			WithField("userID", userID).
+			WithField("transaction", transaction).
+			Info("AddOrder")
+
 		return &transaction, nil
 	}
 
@@ -214,33 +219,3 @@ func (r *repo) GetNewTransactions(ctx context.Context) ([]model.Transaction, err
 
 	return transactions, nil
 }
-
-// func (r *repo) ListenForNewOrders(ctx context.Context) {
-// 	// Подписываемся на уведомления
-// 	if _, err := r.db.ExecContext(ctx, "LISTEN new_order"); err != nil {
-// 		log.Fatalf("Failed to listen for new orders: %v", err)
-// 	}
-
-// 	for {
-// 		select {
-// 		case <-ctx.Done():
-// 			log.Println("Stopping listening for new orders due to context cancellation")
-// 			return
-// 		default:
-// 			// Ожидаем уведомления
-// 			if notification, err := r.db.WaitForNotification(ctx); err == nil {
-// 				orderID := notification.Payload
-// 				order, err := repo.GetOrderByID(ctx, orderID)
-// 				if err != nil {
-// 					log.Printf("Failed to get order by ID %s: %v", orderID, err)
-// 					continue
-// 				}
-
-// 				go processOrder(ctx, repo, order)
-// 			} else {
-// 				log.Printf("Failed to wait for notification: %v", err)
-// 				time.Sleep(1 * time.Minute) // Retry after some time
-// 			}
-// 		}
-// 	}
-// }

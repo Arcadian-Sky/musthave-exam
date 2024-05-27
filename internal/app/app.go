@@ -19,7 +19,7 @@ import (
 
 type app struct {
 	Logger *logrus.Logger
-	Db     *sql.DB
+	DB     *sql.DB
 	Flags  *settings.InitedFlags
 	Ctx    context.Context
 	CncF   context.CancelFunc
@@ -51,7 +51,7 @@ func NewApp() (*app, error) {
 
 	return &app{
 		Logger: logg,
-		Db:     db,
+		DB:     db,
 		Flags:  parsed,
 		Ctx:    cnt,
 		CncF:   cancel,

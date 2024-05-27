@@ -81,7 +81,7 @@ func FetchAccrual(address string, transactionID string, log *logrus.Logger) (*mo
 	}
 	defer resp.Body.Close()
 
-	log.Info("FetchAccrual resp.StatusCode: ", resp.StatusCode)
+	// log.Info("FetchAccrual resp.StatusCode: ", resp.StatusCode)
 
 	var accrualResponse model.AccrualResponse
 	if resp.StatusCode == http.StatusNoContent {

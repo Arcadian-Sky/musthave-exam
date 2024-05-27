@@ -126,24 +126,6 @@ func (r *repo) GetOrders(ctx context.Context, userID int64, act string) ([]model
 	return orders, nil
 }
 
-func (r *repo) GetBalance(ctx context.Context, userID int64) (model.Balance, error) {
-	var balance model.Balance
-	query := `SELECT balance FROM "user" WHERE id = $1`
-	err := r.db.QueryRowContext(ctx, query, userID).Scan(&balance.Current)
-	if err != nil {
-		r.log.WithError(err).Error("Failed to get balance")
-		return balance, err
-	}
-	// queryWithdrawn := `SELECT SUM(summ) FROM transactions WHERE user_id = $1 AND action = 'Withdraw'`
-	// err = r.db.QueryRowContext(ctx, queryWithdrawn, userID).Scan(&balance.Withdrawn)
-	// if err != nil {
-	// 	r.log.WithError(err).Error("Failed to get withdrawn amount")
-	// 	return balance, err
-	// }
-
-	return balance, nil
-}
-
 func (r *repo) UpdateTransactionStatus(ctx context.Context, transactionID string, status string) error {
 	query := `UPDATE transactions SET status = $1 WHERE id = $2`
 	_, err := r.db.ExecContext(ctx, query, status, transactionID)

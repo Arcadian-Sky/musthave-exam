@@ -68,10 +68,10 @@ func Test_handler_RegisterHandler(t *testing.T) {
 
 	assert.Equal(t, http.StatusBadRequest, rr.Code)
 
-	var uId int64 = 0
+	var uID int64 = 0
 	// пользователь существует
 	logger.Info("Начало если пользователь существует")
-	mockRepo.EXPECT().RegisterUser(gomock.Any(), gomock.Eq(user)).Return(uId, model.ErrLoginAlreadyTaken)
+	mockRepo.EXPECT().RegisterUser(gomock.Any(), gomock.Eq(user)).Return(uID, model.ErrLoginAlreadyTaken)
 
 	req, err = http.NewRequest("POST", "/register", bytes.NewReader(body))
 	assert.NoError(t, err)
@@ -83,7 +83,7 @@ func Test_handler_RegisterHandler(t *testing.T) {
 
 	// ошибкм сервера
 	logger.Info("Начало если ошибка сервера")
-	mockRepo.EXPECT().RegisterUser(gomock.Any(), gomock.Eq(user)).Return(uId, errors.New("some internal error"))
+	mockRepo.EXPECT().RegisterUser(gomock.Any(), gomock.Eq(user)).Return(uID, errors.New("some internal error"))
 
 	req, err = http.NewRequest("POST", "/register", bytes.NewReader(body))
 	assert.NoError(t, err)

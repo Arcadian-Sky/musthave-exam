@@ -1,10 +1,11 @@
 package router
 
 import (
-	"musthave-exam/internal/handler"
 	"net/http"
 
-	_ "github.com/swaggo/http-swagger/example/go-chi/docs"
+	"github.com/Arcadian-Sky/musthave-exam/internal/handler"
+
+	httpSwagger "github.com/swaggo/http-swagger"
 
 	"github.com/go-chi/chi/v5"
 )
@@ -42,5 +43,23 @@ func InitRouter(handler handler.Handler) chi.Router {
 		r.Post("/balance/withdraw", handler.WithdrawHandler)
 	})
 
+	FileServer(r, "/docs", http.Dir("./docs"))
+
+	r.Get("/swagger/*", httpSwagger.Handler(
+		httpSwagger.URL("/docs/swagger.yaml"), // Ссылка на ваш swagger.json
+	))
+
 	return r
+}
+
+func FileServer(r chi.Router, path string, root http.FileSystem) {
+	if path != "/" && path[len(path)-1] != '/' {
+		r.Get(path, http.RedirectHandler(path+"/", http.StatusMovedPermanently).ServeHTTP)
+		path += "/"
+	}
+	path += "*"
+
+	r.Get(path, func(w http.ResponseWriter, r *http.Request) {
+		http.StripPrefix("/docs/", http.FileServer(root)).ServeHTTP(w, r)
+	})
 }

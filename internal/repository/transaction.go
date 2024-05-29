@@ -2,7 +2,8 @@ package repository
 
 import (
 	"context"
-	"musthave-exam/internal/model"
+
+	"github.com/Arcadian-Sky/musthave-exam/internal/model"
 )
 
 func (r *repo) AddOrder(ctx context.Context, userID int64, number string) (*model.Transaction, error) {

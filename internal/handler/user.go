@@ -3,9 +3,11 @@ package handler
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"io"
-	"musthave-exam/internal/model"
 	"net/http"
+
+	"github.com/Arcadian-Sky/musthave-exam/internal/model"
 
 	"github.com/gorilla/sessions"
 )
@@ -35,9 +37,17 @@ func (h *Handler) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	ctx := r.Context()
+	userID, err := h.repo.CheckUserExisis(ctx, user)
+	fmt.Printf("!userID: %v\n", userID)
+	if userID > 0 {
+		h.log.Warning("user exisis")
+		http.Error(w, model.ErrLoginAlreadyTaken.Error(), http.StatusConflict)
+		return
+	}
 
-	userID, err := h.repo.RegisterUser(ctx, user)
+	userID, err = h.repo.RegisterUser(ctx, user)
 	if err != nil {
+		fmt.Printf("userID: %v\n", userID)
 		if err.Error() == model.ErrLoginAlreadyTaken.Error() {
 			h.log.WithError(err).Warning(err.Error())
 			http.Error(w, err.Error(), http.StatusConflict)

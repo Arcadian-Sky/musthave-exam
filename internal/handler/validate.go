@@ -1,11 +1,12 @@
 package handler
 
 import (
-	"musthave-exam/internal/model"
 	"net/http"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/Arcadian-Sky/musthave-exam/internal/model"
 
 	"github.com/golang-jwt/jwt/v4"
 )

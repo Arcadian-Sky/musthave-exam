@@ -5,10 +5,11 @@ import (
 	"database/sql"
 	"log"
 	"math"
-	"musthave-exam/internal/model"
-	"musthave-exam/internal/process/repolistener"
-	"musthave-exam/migrations"
 	"time"
+
+	"github.com/Arcadian-Sky/musthave-exam/internal/model"
+	"github.com/Arcadian-Sky/musthave-exam/internal/process/repolistener"
+	"github.com/Arcadian-Sky/musthave-exam/migrations"
 
 	"github.com/pressly/goose/v3"
 	"github.com/sirupsen/logrus"
@@ -32,6 +33,7 @@ const (
 // }
 
 type Repository interface {
+	CheckUserExisis(ctx context.Context, user model.User) (int64, error)
 	RegisterUser(ctx context.Context, user model.User) (int64, error)
 	LoginUser(ctx context.Context, user model.User) (int64, error)
 	GetUser(ctx context.Context, id int64) (model.User, error)

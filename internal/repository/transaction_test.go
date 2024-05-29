@@ -2,10 +2,11 @@ package repository
 
 import (
 	"context"
-	"musthave-exam/internal/model"
 	"regexp"
 	"testing"
 	"time"
+
+	"github.com/Arcadian-Sky/musthave-exam/internal/model"
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/golang/mock/gomock"

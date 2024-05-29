@@ -6,7 +6,7 @@ package mocks
 
 import (
 	context "context"
-	model "musthave-exam/internal/model"
+	model "github.com/Arcadian-Sky/musthave-exam/internal/model"
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"

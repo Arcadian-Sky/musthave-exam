@@ -3,10 +3,11 @@ package handler
 import (
 	"encoding/json"
 	"io"
-	"musthave-exam/internal/model"
-	"musthave-exam/internal/repository"
 	"net/http"
 	"strings"
+
+	"github.com/Arcadian-Sky/musthave-exam/internal/model"
+	"github.com/Arcadian-Sky/musthave-exam/internal/repository"
 )
 
 func (h *Handler) AddOrderHandler(w http.ResponseWriter, r *http.Request) {

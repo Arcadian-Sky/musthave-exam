@@ -7,9 +7,9 @@ import (
 	"fmt"
 	"net/http"
 
-	"musthave-exam/internal/model"
-	"musthave-exam/internal/settings"
-	"musthave-exam/migrations"
+	"github.com/Arcadian-Sky/musthave-exam/internal/model"
+	"github.com/Arcadian-Sky/musthave-exam/internal/settings"
+	"github.com/Arcadian-Sky/musthave-exam/migrations"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/pressly/goose/v3"

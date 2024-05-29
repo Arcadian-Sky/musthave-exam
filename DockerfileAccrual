@@ -1,5 +1,5 @@
 # Dockerfile for /cmd/accrual/accrual_linux_amd64
-FROM golang:1.21.8
+FROM golang:1.21.8 AS build
 
 WORKDIR /project/acrl/
 

@@ -68,9 +68,13 @@ func (r *repo) Withdraw(ctx context.Context, userID int64, order string, sum flo
 
 	defer func() {
 		if err != nil {
-			tx.Rollback()
+			if err := tx.Rollback(); err != nil {
+				r.log.WithError(err).Fatal("tx.Rollback() failed")
+			}
 		} else {
-			tx.Commit()
+			if err := tx.Commit(); err != nil {
+				r.log.WithError(err).Info("tx.Commit() failed")
+			}
 		}
 	}()
 
@@ -154,7 +158,9 @@ func (r *repo) UpdateTransactionStatusAndAccrual(ctx context.Context, transactio
 	query := `UPDATE transactions SET status = $1, summ = $2 WHERE id = $3`
 	_, err = tx.ExecContext(ctx, query, status, accrual, transactionID)
 	if err != nil {
-		tx.Rollback()
+		if err := tx.Rollback(); err != nil {
+			r.log.WithError(err).Fatal("tx.Rollback() failed")
+		}
 		r.log.WithError(err).Error("Failed to update transaction status and accrual")
 		return err
 	}
@@ -165,7 +171,9 @@ func (r *repo) UpdateTransactionStatusAndAccrual(ctx context.Context, transactio
 		query = `SELECT user_id FROM transactions WHERE id = $1`
 		err = tx.QueryRowContext(ctx, query, transactionID).Scan(&userID)
 		if err != nil {
-			tx.Rollback()
+			if err := tx.Rollback(); err != nil {
+				r.log.WithError(err).Fatal("tx.Rollback() failed")
+			}
 			r.log.WithError(err).Error("Failed to get user_id for transaction")
 			return err
 		}
@@ -173,7 +181,9 @@ func (r *repo) UpdateTransactionStatusAndAccrual(ctx context.Context, transactio
 		query = `UPDATE "user" SET balance = balance + $1 WHERE id = $2`
 		_, err = tx.ExecContext(ctx, query, RoundToFiveDecimalPlaces(accrual), userID)
 		if err != nil {
-			tx.Rollback()
+			if err := tx.Rollback(); err != nil {
+				r.log.WithError(err).Fatal("tx.Rollback() failed")
+			}
 			r.log.WithError(err).Error("Failed to update user balance")
 			return err
 		}

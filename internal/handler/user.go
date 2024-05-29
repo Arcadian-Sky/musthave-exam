@@ -8,11 +8,9 @@ import (
 	"net/http"
 
 	"github.com/Arcadian-Sky/musthave-exam/internal/model"
-
-	"github.com/gorilla/sessions"
 )
 
-var store = sessions.NewCookieStore([]byte("secret-key"))
+// var store = sessions.NewCookieStore([]byte("secret-key"))
 
 func (h *Handler) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	var user model.User
@@ -38,7 +36,6 @@ func (h *Handler) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	ctx := r.Context()
 	userID, err := h.repo.CheckUserExisis(ctx, user)
-	fmt.Printf("!userID: %v\n", userID)
 	if userID > 0 {
 		h.log.Warning("user exisis")
 		http.Error(w, model.ErrLoginAlreadyTaken.Error(), http.StatusConflict)
@@ -58,7 +55,10 @@ func (h *Handler) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.setAuth(w, r, userID)
+	err = h.setAuth(w, r, userID)
+	if err != nil {
+		h.log.WithError(err).Info("h.setAuth failed")
+	}
 
 	h.log.
 		WithField("userID", userID).
@@ -102,7 +102,11 @@ func (h *Handler) LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.setAuth(w, r, userID)
+	err = h.setAuth(w, r, userID)
+	if err != nil {
+		h.log.WithError(err).Info("h.setAuth failed")
+	}
+
 	h.log.
 		WithField("userID", userID).
 		Info("LoginHandler")
@@ -133,5 +137,8 @@ func (h *Handler) GetUserHandler(w http.ResponseWriter, r *http.Request) {
 		WithField("userID", userID).
 		Debug("GetUserHandler")
 
-	json.NewEncoder(w).Encode(user)
+	err = json.NewEncoder(w).Encode(user)
+	if err != nil {
+		h.log.WithError(err).Info("json.NewEncoder failed")
+	}
 }

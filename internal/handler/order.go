@@ -50,7 +50,10 @@ func (h *Handler) AddOrderHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	}
 
-	w.Write([]byte(orderNumber))
+	_, err = w.Write([]byte(orderNumber))
+	if err != nil {
+		h.log.WithError(err).Info("w.Write failed")
+	}
 }
 
 func (h *Handler) GetOrdersHandler(w http.ResponseWriter, r *http.Request) {
@@ -86,7 +89,10 @@ func (h *Handler) GetOrdersHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	w.Write(response)
+	_, err = w.Write(response)
+	if err != nil {
+		h.log.WithError(err).Info("w.Write failed")
+	}
 }
 
 func (h *Handler) GetBalanceHandler(w http.ResponseWriter, r *http.Request) {
@@ -112,7 +118,10 @@ func (h *Handler) GetBalanceHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	w.Write(response)
+	_, err = w.Write(response)
+	if err != nil {
+		h.log.WithError(err).Info("w.Write failed")
+	}
 }
 
 func (h *Handler) GetWithdrawalsHandler(w http.ResponseWriter, r *http.Request) {
@@ -150,7 +159,10 @@ func (h *Handler) GetWithdrawalsHandler(w http.ResponseWriter, r *http.Request) 
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	w.Write(response)
+	_, err = w.Write(response)
+	if err != nil {
+		h.log.WithError(err).Info("w.Write failed")
+	}
 }
 
 func (h *Handler) WithdrawHandler(w http.ResponseWriter, r *http.Request) {

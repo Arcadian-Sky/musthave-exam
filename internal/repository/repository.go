@@ -33,7 +33,6 @@ const (
 // }
 
 type Repository interface {
-	CheckUserExisis(ctx context.Context, user model.User) (int64, error)
 	RegisterUser(ctx context.Context, user model.User) (int64, error)
 	LoginUser(ctx context.Context, user model.User) (int64, error)
 	GetUser(ctx context.Context, id int64) (model.User, error)

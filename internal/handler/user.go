@@ -71,7 +71,7 @@ func (h *Handler) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
-func (h *Handler) LoginHandler(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) LoginUserHandler(w http.ResponseWriter, r *http.Request) {
 	var credentials model.User
 	// Читаем тело запроса
 	body, err := io.ReadAll(r.Body)
@@ -113,7 +113,7 @@ func (h *Handler) LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 	h.log.
 		WithField("userID", userID).
-		Info("LoginHandler")
+		Info("LoginUserHandler")
 
 	w.WriteHeader(http.StatusOK)
 }

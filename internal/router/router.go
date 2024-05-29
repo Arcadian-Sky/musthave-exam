@@ -35,7 +35,7 @@ func InitRouter(handler handler.Handler) chi.Router {
 
 	r.Route("/api/user", func(r chi.Router) {
 		r.Post("/register", handler.RegisterHandler)
-		r.Post("/login", handler.LoginHandler)
+		r.Post("/login", handler.LoginUserHandler)
 		r.Post("/orders", handler.AddOrderHandler)
 		r.Get("/orders", handler.GetOrdersHandler)
 		r.Get("/balance", handler.GetBalanceHandler)

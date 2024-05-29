@@ -4,6 +4,8 @@ import (
 	"musthave-exam/internal/handler"
 	"net/http"
 
+	_ "github.com/swaggo/http-swagger/example/go-chi/docs"
+
 	"github.com/go-chi/chi/v5"
 )
 
@@ -40,10 +42,5 @@ func InitRouter(handler handler.Handler) chi.Router {
 		r.Post("/balance/withdraw", handler.WithdrawHandler)
 	})
 
-	// r.Get("/swagger/*", httpSwagger.Handler(
-	// 	httpSwagger.URL("./doc.json"), // Ссылка на ваш swagger.json
-	// ))
-
-	// log.Fatal(http.ListenAndServe(flags.Parse(), r))
 	return r
 }

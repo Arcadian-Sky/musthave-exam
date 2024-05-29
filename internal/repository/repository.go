@@ -25,11 +25,11 @@ const (
 	Withdraw = "Withdraw"
 )
 
-type UserRepository interface {
-	RegisterUser(ctx context.Context, user model.User) (int64, error)
-	LoginUser(ctx context.Context, user model.User) (int64, error)
-	GetUser(ctx context.Context, id int64) (model.User, error)
-}
+// type UserRepository interface {
+// 	RegisterUser(ctx context.Context, user model.User) (int64, error)
+// 	LoginUser(ctx context.Context, user model.User) (int64, error)
+// 	GetUser(ctx context.Context, id int64) (model.User, error)
+// }
 
 type Repository interface {
 	RegisterUser(ctx context.Context, user model.User) (int64, error)

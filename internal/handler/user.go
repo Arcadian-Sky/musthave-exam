@@ -36,6 +36,10 @@ func (h *Handler) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	ctx := r.Context()
 	userID, err := h.repo.CheckUserExisis(ctx, user)
+	if err != nil {
+		h.log.WithError(err).Error(model.ErrInternalServer.Error())
+		http.Error(w, model.ErrInternalServer.Error(), http.StatusInternalServerError)
+	}
 	if userID > 0 {
 		h.log.Warning("user exisis")
 		http.Error(w, model.ErrLoginAlreadyTaken.Error(), http.StatusConflict)

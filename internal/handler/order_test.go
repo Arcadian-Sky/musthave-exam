@@ -109,6 +109,7 @@ func TestHandler_AddOrderHandler(t *testing.T) {
 			h.AddOrderHandler(w, req)
 
 			resp := w.Result()
+			defer resp.Body.Close()
 			body, _ := io.ReadAll(resp.Body)
 
 			assert.Equal(t, tt.expectedStatus, resp.StatusCode)
@@ -192,6 +193,7 @@ func TestHandler_GetOrdersHandler(t *testing.T) {
 			h.GetOrdersHandler(w, req)
 
 			resp := w.Result()
+			defer resp.Body.Close()
 			body, _ := io.ReadAll(resp.Body)
 
 			assert.Equal(t, tt.expectedStatus, resp.StatusCode)
@@ -262,6 +264,7 @@ func TestHandler_GetBalanceHandler(t *testing.T) {
 			h.GetBalanceHandler(w, req)
 
 			resp := w.Result()
+			defer resp.Body.Close()
 			body, _ := io.ReadAll(resp.Body)
 
 			assert.Equal(t, tt.expectedStatus, resp.StatusCode)
@@ -351,6 +354,7 @@ func TestHandler_GetWithdrawalsHandler(t *testing.T) {
 			h.GetWithdrawalsHandler(w, req)
 
 			resp := w.Result()
+			defer resp.Body.Close()
 			body, _ := io.ReadAll(resp.Body)
 
 			assert.Equal(t, tt.expectedStatus, resp.StatusCode)
@@ -462,6 +466,7 @@ func TestHandler_WithdrawHandler(t *testing.T) {
 			h.WithdrawHandler(w, req)
 
 			resp := w.Result()
+			defer resp.Body.Close()
 			body, _ := io.ReadAll(resp.Body)
 
 			assert.Equal(t, tt.expectedStatus, resp.StatusCode)

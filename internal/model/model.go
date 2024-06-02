@@ -11,6 +11,7 @@ var (
 	ErrEmptyRequestBody   = errors.New("request body is empty")
 	ErrErrorRequestBody   = errors.New("failed to read request body")
 	ErrFailedToDecodeJSON = errors.New("failed to decode JSON")
+	ErrStructureJSON      = errors.New("error in JSON strucrure")
 	ErrInternalServer     = errors.New("internal server error")
 	ErrNotAuthorized      = errors.New("user not authenticated")
 	ErrUserNotFound       = errors.New("user not found")

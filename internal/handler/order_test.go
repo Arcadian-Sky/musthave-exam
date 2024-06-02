@@ -104,6 +104,7 @@ func TestHandler_AddOrderHandler(t *testing.T) {
 				req = httptest.NewRequest("POST", "/add-order", strings.NewReader(tt.requestBody))
 			}
 			req.Header.Set("Authorization", tt.authHeader)
+			req.Header.Set("Content-Type", "text/plain")
 
 			w := httptest.NewRecorder()
 			h.AddOrderHandler(w, req)

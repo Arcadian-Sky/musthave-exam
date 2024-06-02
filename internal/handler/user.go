@@ -109,7 +109,6 @@ func (h *Handler) LoginUserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Print("raw:", raw)
 	// Декодируем JSON из []byte в структуру User
 	if err := json.Unmarshal(body, &credentials); err != nil {
 		h.log.WithField("JSON", err.Error()).Info(model.ErrFailedToDecodeJSON.Error())

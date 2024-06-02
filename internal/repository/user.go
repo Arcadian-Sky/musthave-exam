@@ -54,14 +54,14 @@ func (r *repo) LoginUser(ctx context.Context, user model.User) (int64, error) {
 	err := r.db.QueryRowContext(ctx, query, user.Login).Scan(&storedUser.ID, &storedUser.Password)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return 0, model.ErrInvalidLoginPass
+			return 0, model.ErrInvalidLoginAndPass
 		}
 		return 0, err
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(storedUser.Password), []byte(user.Password))
 	if err != nil {
-		return 0, model.ErrInvalidLoginPass
+		return 0, model.ErrInvalidLoginAndPass
 	}
 
 	return storedUser.ID, nil

@@ -48,18 +48,6 @@ func (h *Handler) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, model.ErrInternalServer.Error(), http.StatusBadRequest)
 	}
 
-	// userID, err := h.repo.CheckUserExisis(ctx, user)
-	// if err != nil {
-	// 	http.Error(w, model.ErrInternalServer.Error(), http.StatusInternalServerError)
-	// 	return
-	// }
-
-	// if userID > 0 {
-	// 	h.log.WithError(err).Warning(model.ErrLoginAlreadyTaken.Error())
-	// 	http.Error(w, model.ErrLoginAlreadyTaken.Error(), http.StatusConflict)
-	// 	return
-	// }
-
 	userID, err := h.repo.RegisterUser(ctx, user)
 	if err != nil {
 		fmt.Printf("userID: %v\n", userID)
@@ -110,14 +98,14 @@ func (h *Handler) LoginUserHandler(w http.ResponseWriter, r *http.Request) {
 	var raw map[string]json.RawMessage
 	err = json.Unmarshal(body, &raw)
 	if err != nil {
-		h.log.WithError(err).Warning(model.ErrInvalidLoginPass.Error())
-		http.Error(w, model.ErrInvalidLoginPass.Error(), http.StatusUnauthorized)
+		h.log.WithError(err).Warning(model.ErrInvalidLoginAndPass.Error())
+		http.Error(w, model.ErrInvalidLoginAndPass.Error(), http.StatusUnauthorized)
 		return
 	}
 
 	if len(raw) > 2 { // Here you can check for extra fields
-		h.log.WithField("JSON", model.ErrInvalidLoginPass.Error()).Info(model.ErrFailedToDecodeJSON.Error())
-		http.Error(w, model.ErrInvalidLoginPass.Error(), http.StatusBadRequest)
+		h.log.WithField("JSON", model.ErrInvalidLoginAndPass.Error()).Info(model.ErrFailedToDecodeJSON.Error())
+		http.Error(w, model.ErrInvalidLoginAndPass.Error(), http.StatusBadRequest)
 		return
 	}
 
@@ -138,9 +126,9 @@ func (h *Handler) LoginUserHandler(w http.ResponseWriter, r *http.Request) {
 
 	userID, err := h.repo.LoginUser(context.Background(), credentials)
 	if err != nil {
-		if err.Error() == model.ErrInvalidLoginPass.Error() {
-			h.log.WithError(err).Warning(model.ErrInvalidLoginPass.Error())
-			http.Error(w, model.ErrInvalidLoginPass.Error(), http.StatusUnauthorized)
+		if err.Error() == model.ErrInvalidLoginAndPass.Error() {
+			h.log.WithError(err).Warning(model.ErrInvalidLoginAndPass.Error())
+			http.Error(w, model.ErrInvalidLoginAndPass.Error(), http.StatusUnauthorized)
 			return
 		}
 		h.log.WithError(err).Error(model.ErrInternalServer.Error())

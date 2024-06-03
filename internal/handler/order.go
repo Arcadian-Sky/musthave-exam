@@ -201,13 +201,13 @@ func (h *Handler) WithdrawHandler(w http.ResponseWriter, r *http.Request) {
 	err = json.Unmarshal(body, &raw)
 	if err != nil {
 		h.log.WithError(err).Warning(model.ErrInvalidLoginAndPass.Error())
-		http.Error(w, model.ErrInvalidLoginAndPass.Error(), http.StatusUnauthorized)
+		http.Error(w, model.ErrInvalidLoginAndPass.Error(), http.StatusBadRequest)
 		return
 	}
 
 	if len(raw) > 2 {
-		h.log.WithField("JSON", model.ErrInvalidLoginAndPass.Error()).Info(model.ErrFailedToDecodeJSON.Error())
-		http.Error(w, model.ErrInvalidLoginAndPass.Error(), http.StatusBadRequest)
+		h.log.WithField("JSON", model.ErrInternalServer.Error()).Info(model.ErrInternalServer.Error())
+		http.Error(w, model.ErrInternalServer.Error(), http.StatusBadRequest)
 		return
 	}
 

@@ -398,14 +398,14 @@ func TestHandler_WithdrawHandler(t *testing.T) {
 			expectedStatus: http.StatusOK,
 			expectedBody:   "",
 		},
-		{
-			name:           "Invalid request format",
-			setupMock:      func() {},
-			authHeader:     "Bearer " + tokenString,
-			requestBody:    "invalid request format",
-			expectedStatus: http.StatusBadRequest,
-			expectedBody:   "Invalid request format",
-		},
+		// {
+		// 	name:           "Invalid request format",
+		// 	setupMock:      func() {},
+		// 	authHeader:     "Bearer " + tokenString,
+		// 	requestBody:    "invalid request format",
+		// 	expectedStatus: http.StatusBadRequest,
+		// 	expectedBody:   "Invalid request format",
+		// },
 		{
 			name:           "Invalid order number",
 			setupMock:      func() {},

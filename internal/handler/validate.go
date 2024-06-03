@@ -1,11 +1,14 @@
 package handler
 
 import (
-	"musthave-exam/internal/model"
+	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/Arcadian-Sky/musthave-exam/internal/model"
+	"github.com/buger/jsonparser"
 
 	"github.com/golang-jwt/jwt/v4"
 )
@@ -14,13 +17,6 @@ const TokenExp = time.Hour * 3
 const SecretKey = "supersecretkey"
 
 func (h *Handler) isValidAuth(_ http.ResponseWriter, r *http.Request) (int64, bool) {
-	// session, _ := store.Get(r, "session")
-	// UserID, ok := session.Values["user_id"].(int64)
-	// if !ok {
-	// 	return 0, false
-	// }
-	// return UserID, true
-
 	authHeader := r.Header.Get("Authorization")
 	if authHeader == "" {
 		return 0, false
@@ -87,6 +83,27 @@ func (h *Handler) BuildJWTString(userID int64) (string, error) {
 
 	// возвращаем строку токена
 	return tokenString, nil
+}
+
+func isValidJSON(data []byte) error {
+	seenKeys := make(map[string]struct{})
+
+	err := jsonparser.ObjectEach(data, func(key []byte, value []byte, dataType jsonparser.ValueType, offset int) error {
+		keyStr := string(key)
+		if _, exists := seenKeys[keyStr]; exists {
+			return fmt.Errorf("duplicate key found: %s", keyStr)
+		}
+		seenKeys[keyStr] = struct{}{}
+		return nil
+	})
+	if err != nil {
+		if strings.Contains(err.Error(), "duplicate key found") {
+			return err
+		}
+		return fmt.Errorf("invalid JSON format: %v", err)
+	}
+
+	return nil
 }
 
 func (h *Handler) isValidOrderNumber(number string) bool {

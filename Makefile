@@ -24,22 +24,22 @@ help:			## Show this help
 fmt:			## Format code
 	find . -iname "*.go" | xargs gofmt -w
 
-.PHONY: build
-build:			## Build apps
-	CGO_ENABLED=0 go build \
-		-mod=mod \
-		-tags='no_mysql no_sqlite3' \
-		-o ./bin/goods$(shell go env GOEXE) cmd/goods/main.go
+# .PHONY: build
+# build:			## Build apps
+# 	CGO_ENABLED=0 go build \
+# 		-mod=mod \
+# 		-tags='no_mysql no_sqlite3' \
+# 		-o ./bin/goods$(shell go env GOEXE) cmd/goods/main.go
 
-	CGO_ENABLED=0 go build \
-		-mod=mod \
-		-tags='no_mysql no_sqlite3' \
-		-o ./bin/migrate$(shell go env GOEXE) cmd/migrate/main.go
+# 	CGO_ENABLED=0 go build \
+# 		-mod=mod \
+# 		-tags='no_mysql no_sqlite3' \
+# 		-o ./bin/migrate$(shell go env GOEXE) cmd/migrate/main.go
 
-	CGO_ENABLED=0 go build \
-		-mod=mod \
-		-tags='no_mysql no_sqlite3' \
-		-o ./bin/connect$(shell go env GOEXE) cmd/connect/main.go
+# 	CGO_ENABLED=0 go build \
+# 		-mod=mod \
+# 		-tags='no_mysql no_sqlite3' \
+# 		-o ./bin/connect$(shell go env GOEXE) cmd/connect/main.go
 
 .PHONY: clean
 clean:			## Remove generated artifacts
@@ -58,13 +58,17 @@ config:			## Show Docker config
 up:			## Run Docker services
 	docker compose ${DOCKER_COMPOSE_FILES} up --detach
 
+.PHONY: build
+build:			## Build Docker services
+	docker compose ${DOCKER_COMPOSE_FILES} build
+
 .PHONY: down
 down:			## Stop Docker services
 	docker compose ${DOCKER_COMPOSE_FILES} down
 
 .PHONY: ps
 ps:			## Show Docker containers info
-	docker ps --size --all --filter "name=goods-api"
+	docker ps --size --all --filter "name=musthave-exam"
 
 #######################################################################################################################
 

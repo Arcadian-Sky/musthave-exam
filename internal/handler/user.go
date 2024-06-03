@@ -3,14 +3,14 @@ package handler
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"io"
-	"musthave-exam/internal/model"
 	"net/http"
 
-	"github.com/gorilla/sessions"
+	"github.com/Arcadian-Sky/musthave-exam/internal/model"
 )
 
-var store = sessions.NewCookieStore([]byte("secret-key"))
+// var store = sessions.NewCookieStore([]byte("secret-key"))
 
 func (h *Handler) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	var user model.User
@@ -28,6 +28,12 @@ func (h *Handler) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if err := isValidJSON(body); err != nil {
+		h.log.WithField("ValidJSON", err.Error()).Info(model.ErrFailedToDecodeJSON.Error())
+		http.Error(w, model.ErrFailedToDecodeJSON.Error()+": "+err.Error(), http.StatusBadRequest)
+		return
+	}
+
 	// Декодируем JSON из []byte в структуру User
 	if err := json.Unmarshal(body, &user); err != nil {
 		h.log.WithField("JSON", err.Error()).Info(model.ErrFailedToDecodeJSON.Error())
@@ -36,8 +42,15 @@ func (h *Handler) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	ctx := r.Context()
 
+	if len(user.Login) == 0 ||
+		len(user.Password) == 0 {
+		h.log.WithError(err).Error(model.ErrInternalServer.Error())
+		http.Error(w, model.ErrInternalServer.Error(), http.StatusBadRequest)
+	}
+
 	userID, err := h.repo.RegisterUser(ctx, user)
 	if err != nil {
+		fmt.Printf("userID: %v\n", userID)
 		if err.Error() == model.ErrLoginAlreadyTaken.Error() {
 			h.log.WithError(err).Warning(err.Error())
 			http.Error(w, err.Error(), http.StatusConflict)
@@ -48,7 +61,10 @@ func (h *Handler) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.setAuth(w, r, userID)
+	err = h.setAuth(w, r, userID)
+	if err != nil {
+		h.log.WithError(err).Info("h.setAuth failed")
+	}
 
 	h.log.
 		WithField("userID", userID).
@@ -57,7 +73,7 @@ func (h *Handler) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
-func (h *Handler) LoginHandler(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) LoginUserHandler(w http.ResponseWriter, r *http.Request) {
 	var credentials model.User
 	// Читаем тело запроса
 	body, err := io.ReadAll(r.Body)
@@ -73,6 +89,26 @@ func (h *Handler) LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if err := isValidJSON(body); err != nil {
+		h.log.WithField("ValidJSON", err.Error()).Info(model.ErrFailedToDecodeJSON.Error())
+		http.Error(w, model.ErrFailedToDecodeJSON.Error()+": "+err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	var raw map[string]json.RawMessage
+	err = json.Unmarshal(body, &raw)
+	if err != nil {
+		h.log.WithError(err).Warning(model.ErrInvalidLoginAndPass.Error())
+		http.Error(w, model.ErrInvalidLoginAndPass.Error(), http.StatusUnauthorized)
+		return
+	}
+
+	if len(raw) > 2 { // Here you can check for extra fields
+		h.log.WithField("JSON", model.ErrInvalidLoginAndPass.Error()).Info(model.ErrFailedToDecodeJSON.Error())
+		http.Error(w, model.ErrInvalidLoginAndPass.Error(), http.StatusBadRequest)
+		return
+	}
+
 	// Декодируем JSON из []byte в структуру User
 	if err := json.Unmarshal(body, &credentials); err != nil {
 		h.log.WithField("JSON", err.Error()).Info(model.ErrFailedToDecodeJSON.Error())
@@ -80,11 +116,18 @@ func (h *Handler) LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if len(credentials.Login) == 0 ||
+		len(credentials.Password) == 0 {
+		h.log.WithError(err).Error(model.ErrInternalServer.Error())
+		http.Error(w, model.ErrInternalServer.Error(), http.StatusUnauthorized)
+		return
+	}
+
 	userID, err := h.repo.LoginUser(context.Background(), credentials)
 	if err != nil {
-		if err.Error() == model.ErrLoginAlreadyTaken.Error() {
-			h.log.WithError(err).Warning(model.ErrLoginAlreadyTaken.Error())
-			http.Error(w, model.ErrLoginAlreadyTaken.Error(), http.StatusUnauthorized)
+		if err.Error() == model.ErrInvalidLoginAndPass.Error() {
+			h.log.WithError(err).Warning(model.ErrInvalidLoginAndPass.Error())
+			http.Error(w, model.ErrInvalidLoginAndPass.Error(), http.StatusUnauthorized)
 			return
 		}
 		h.log.WithError(err).Error(model.ErrInternalServer.Error())
@@ -92,10 +135,14 @@ func (h *Handler) LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.setAuth(w, r, userID)
+	err = h.setAuth(w, r, userID)
+	if err != nil {
+		h.log.WithError(err).Info("h.setAuth failed")
+	}
+
 	h.log.
 		WithField("userID", userID).
-		Info("LoginHandler")
+		Info("LoginUserHandler")
 
 	w.WriteHeader(http.StatusOK)
 }
@@ -123,5 +170,8 @@ func (h *Handler) GetUserHandler(w http.ResponseWriter, r *http.Request) {
 		WithField("userID", userID).
 		Debug("GetUserHandler")
 
-	json.NewEncoder(w).Encode(user)
+	err = json.NewEncoder(w).Encode(user)
+	if err != nil {
+		h.log.WithError(err).Info("json.NewEncoder failed")
+	}
 }
